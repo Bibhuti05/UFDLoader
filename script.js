@@ -95,53 +95,8 @@ const downloadButtons = document.querySelectorAll('.download-btn');
 
 downloadButtons.forEach(button => {
     button.addEventListener('click', function() {
-        const platform = this.dataset.platform;
-        let downloadUrl = '';
-        let fileName = '';
-
-        // Map platform to download URLs (local files for now)
-        switch(platform) {
-            case 'linux':
-                downloadUrl = './downloads/ufdloader-linux';
-                fileName = 'ufdloader-linux';
-                break;
-            case 'mac-intel':
-                downloadUrl = './downloads/ufdloader-mac';
-                fileName = 'ufdloader-mac';
-                break;
-            case 'mac-arm':
-                downloadUrl = './downloads/ufdloader-mac';
-                fileName = 'ufdloader-mac-arm64';
-                break;
-            case 'windows':
-                downloadUrl = './downloads/ufdloader-windows.exe';
-                fileName = 'ufdloader-windows.exe';
-                break;
-        }
-
-        // Show loading state
-        const originalContent = this.innerHTML;
-        this.innerHTML = '<div class="loading"></div> Downloading...';
-        this.disabled = true;
-
-        // Simulate download (in real implementation, this would trigger actual download)
-        setTimeout(() => {
-            // Create download link
-            const link = document.createElement('a');
-            link.href = downloadUrl;
-            link.download = fileName;
-            link.style.display = 'none';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            // Reset button
-            this.innerHTML = originalContent;
-            this.disabled = false;
-
-            // Show success message
-            showNotification(`Download started for ${fileName}!`);
-        }, 1500);
+        // Redirect all download buttons to GitHub releases
+        window.open('https://github.com/Bibhuti05/UFDLoader/releases/tag/Alpha', '_blank');
     });
 });
 
