@@ -1,0 +1,30 @@
+{
+  "name": "ufdloader",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/react": "^19.2.7"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "scripts": {
+    "build": "chmod +x build.sh && ./build.sh",
+    "build:linux": "bun build --compile --target=bun-linux-x64 index.ts --outfile dist/ufdloader-linux",
+    "build:mac": "bun build --compile --target=bun-darwin-x64 index.ts --outfile dist/ufdloader-mac",
+    "build:mac-arm": "bun build --compile --target=bun-darwin-arm64 index.ts --outfile dist/ufdloader-mac-arm64",
+    "build:windows": "bun build --compile --target=bun-windows-x64 index.ts --outfile dist/ufdloader-windows.exe"
+  },
+  "dependencies": {
+    "axios": "^1.13.2",
+    "chalk": "^5.6.2",
+    "commander": "^14.0.2",
+    "ink": "^6.6.0",
+    "ink-select-input": "^6.2.0",
+    "ink-text-input": "^6.0.0",
+    "react": "^19.2.3",
+    "react-devtools-core": "^7.0.1"
+  }
+}
