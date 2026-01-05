@@ -15,20 +15,6 @@ program
     .option('-o, --output <path>', 'output destination')
     .action(async (url, options) => {
         try {
-            // If URL is missing, ask the user interactively
-            if (!url) {
-                const readline = require('node:readline');
-                const rl = readline.createInterface({
-                    input: process.stdin,
-                    output: process.stdout,
-                });
-                url = await new Promise((resolve) => {
-                    rl.question('Enter the URL to download: ', (answer: string) => {
-                        rl.close();
-                        resolve(answer.trim());
-                    });
-                });
-            }
             const connections = parseInt(options.connections, 10);
             const { waitUntilExit } = render(React.createElement(App, {
                 url,

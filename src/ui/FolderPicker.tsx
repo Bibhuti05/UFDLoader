@@ -8,6 +8,7 @@ interface Item {
     label: string;
     value: string;
     isDirectory: boolean;
+    key?: string;
 }
 
 interface Props {
@@ -22,8 +23,8 @@ export const FolderPicker: React.FC<Props> = ({ onSelect }) => {
         try {
             const files = fs.readdirSync(currentPath, { withFileTypes: true });
             const list: Item[] = [
-                { label: '󰉖  .. (Go Up)', value: '..', isDirectory: true },
-                { label: '󰄬  SELECT CURRENT FOLDER', value: '.', isDirectory: false },
+                { label: '󰉖  .. (Go Up)', value: '..', isDirectory: true, key: '..' },
+                { label: '󰄬  SELECT CURRENT FOLDER', value: '.', isDirectory: false, key: '.' },
                 ...files
                     .filter(f => f.isDirectory() || !f.name.startsWith('.'))
                     .sort((a, b) => {
@@ -34,7 +35,8 @@ export const FolderPicker: React.FC<Props> = ({ onSelect }) => {
                     .map(f => ({
                         label: f.isDirectory() ? `  ${f.name}` : `󰈔  ${f.name}`,
                         value: f.name,
-                        isDirectory: f.isDirectory()
+                        isDirectory: f.isDirectory(),
+                        key: f.name
                     }))
             ];
             setItems(list);

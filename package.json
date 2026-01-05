@@ -23,7 +23,7 @@
     "commander": "^14.0.2",
     "ink": "^6.6.0",
     "ink-select-input": "^6.2.0",
-    "ink-text-input": "^6.0.0",
+    "@inkjs/ui": "^2.0.0",
     "react": "^19.2.3",
     "react-devtools-core": "^7.0.1"
   }

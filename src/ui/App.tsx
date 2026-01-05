@@ -3,24 +3,32 @@ import { Box, Text, Newline } from 'ink';
 import type { DownloadState } from '../types.ts';
 import { formatBytes } from '../utils.ts';
 import { FolderPicker } from './FolderPicker.tsx';
+import { UrlInput } from './UrlInput.tsx';
 import { UfdLoader } from '../engine/downloader.ts';
 import path from 'node:path';
 
 interface AppProps {
-    url: string;
+    url?: string;
     connections: number;
     initialDestination?: string;
 }
 
 export const App: React.FC<AppProps> = ({ url, connections, initialDestination }) => {
-    const [step, setStep] = useState<'picking' | 'downloading'>(initialDestination ? 'downloading' : 'picking');
+    const [step, setStep] = useState<'url-input' | 'picking' | 'downloading'>(url ? (initialDestination ? 'downloading' : 'picking') : 'url-input');
+    const [currentUrl, setCurrentUrl] = useState<string | undefined>(url);
     const [destination, setDestination] = useState<string | undefined>(initialDestination);
     const [loader, setLoader] = useState<UfdLoader | null>(null);
     // Holds a friendly error message when the loader fails
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+    const handleUrlSubmit = (url: string) => {
+        setCurrentUrl(url);
+        setStep(initialDestination ? 'downloading' : 'picking');
+    };
+
     const handleFolderSelect = (folder?: string) => {
-        const defaultFilename = path.basename(new URL(url).pathname) || 'download';
+        if (!currentUrl) return;
+        const defaultFilename = path.basename(new URL(currentUrl).pathname) || 'download';
         // If the user cancels or provides an empty string, fall back to the current directory '.'
         const chosenFolder = folder && folder.trim() !== '' ? folder : '.';
         const finalPath = path.join(chosenFolder, defaultFilename);
@@ -29,8 +37,8 @@ export const App: React.FC<AppProps> = ({ url, connections, initialDestination }
     };
 
     useEffect(() => {
-        if (step === 'downloading' && destination && !loader) {
-            const newLoader = new UfdLoader(url, connections, destination);
+        if (step === 'downloading' && destination && !loader && currentUrl) {
+            const newLoader = new UfdLoader(currentUrl, connections, destination);
             setLoader(newLoader);
 
             // Initialize and start the loader
@@ -44,7 +52,7 @@ export const App: React.FC<AppProps> = ({ url, connections, initialDestination }
                 }
             })();
         }
-    }, [step, destination, url, connections, loader]);
+    }, [step, destination, currentUrl, connections, loader]);
 
     if (errorMsg) {
         return (
@@ -53,6 +61,10 @@ export const App: React.FC<AppProps> = ({ url, connections, initialDestination }
                 <Text color="red"> {errorMsg}</Text>
             </Box>
         );
+    }
+
+    if (step === 'url-input') {
+        return <UrlInput onSubmit={handleUrlSubmit} />;
     }
 
     if (step === 'picking') {

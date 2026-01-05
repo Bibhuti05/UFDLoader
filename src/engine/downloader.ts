@@ -82,7 +82,7 @@ export class UfdLoader extends EventEmitter {
             return;
         }
 
-        // Maximum number of attempts (initial try + up to 2 retries) – as required, max 3 total attempts
+        // Maximum number of attempts (initial try + up to 2 retries)
         const MAX_RETRIES = 3;
         const TIMEOUT_MS = 10000; // 10 seconds
         let head: any = null;
@@ -102,13 +102,23 @@ export class UfdLoader extends EventEmitter {
                 const status = err?.response?.status;
                 const isTimeout = err?.code === 'ECONNABORTED';
                 const isServerError = status && status >= 500 && status < 600;
+                const is403 = status === 403;
+                
                 if (attempt < MAX_RETRIES && (isTimeout || isServerError)) {
                     // simple back‑off: wait a bit before next attempt
                     await new Promise(r => setTimeout(r, 500 * attempt));
                     continue;
                 }
+                
                 // Emit a friendly error and re‑throw
                 const friendly = formatNetworkError(err);
+                
+                // Add helpful message for 403 errors
+                if (is403) {
+                    this.emit('error', new Error(`${friendly}\n\nThis appears to be a Cloudflare-protected site or access-restricted content.\nTry using a browser to download the file directly, or contact the site administrator.`));
+                    throw err;
+                }
+                
                 this.emit('error', new Error(friendly));
                 throw err;
             }
